@@ -75,8 +75,8 @@ export default {
                 lens.style.width = img.width + "px";
             }else{
                 this.maxZoomSize = true;
-                lens.style.height = img.height + "px";
-                lens.style.width = img.height * ratioResult+ "px";
+                lens.style.height = img.height * (1/ratioResult) + "px";
+                lens.style.width = img.width + "px";
             }
 
             /*calculate the ratio between result DIV and lens:*/

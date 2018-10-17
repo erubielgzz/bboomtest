@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Note extends Model
+class NoteFolder extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'note';
+    protected $table = 'note_folder';
 
 }

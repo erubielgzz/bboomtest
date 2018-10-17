@@ -31,9 +31,15 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/notes',
+            path: '/notes/',
             name: 'notes',
             component: Notes,
+            children: [
+                {
+                    name: 'note',
+                    path: ':note_id',
+                },
+            ]
         },
         {
             name: 'not-found',
