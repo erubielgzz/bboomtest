@@ -5,6 +5,10 @@
         <a href="https://stackoverflow.com/jobs/204945/lead-full-stack-developer-brandboom">
             https://stackoverflow.com/jobs/204945/lead-full-stack-developer-brandboom
         </a>
+        <br />
+        With was made with the following stack:
+        PHP 7.2 - Laravel 5.7, Vue.js 2, Vue Router, Bootstrap 4, MomentJs, Lodash, Font Awesome 4.7, MySQL 5.7.<br />
+        It also uses jQuery for some functionality but i try to keep it on vanilla js.
 
         <hr />
         <h3><router-link :to="{ name: 'images' }">Image Preview Tool</router-link></h3>
@@ -17,9 +21,9 @@
 
         Additional functionality by applicant:
         <ul>
-            <li>Upload on drop.</li>
-            <li>Add an image zoom box that can be controlled by minus (-) and plus (+) buttons</li>
-            <li>Provide also the stored image url.</li>
+            <li>Image gallery with pagination to control navigation.</li>
+            <li>"Image zoom box" to see image details, this can be controlled by minus (-) and plus (+) buttons.</li>
+            <li>Delete the image.</li>
         </ul>
 
         <hr />
@@ -41,9 +45,12 @@
 
         Additional functionality by applicant:
         <ul>
-            <li>Pagination</li>
-            <li>Filter the number of notes that can be viewed per page</li>
-            <li>Sort by title or date</li>
+            <li>Emulation of macOS notes app</li>
+            <li>Folders functionality</li>
+            <li>Create folder</li>
+            <li>Edit folder</li>
+            <li>Search by string</li>
+            <li>Auto save</li>
         </ul>
 
     </div>

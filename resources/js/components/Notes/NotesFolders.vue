@@ -33,10 +33,10 @@
         </div>
         <div class="mt-auto p-2">
 
-            <button v-if="!creating_folder && !editing_folders" type="button" class="btn btn-sm btn-outline-secondary ph-3" @click="creating_folder = true">
+            <button v-if="!creating_folder && !editing_folders" type="button" class="btn btn-sm btn-outline-secondary mb-2" @click="creating_folder = true">
                 <i class="fa fa-plus"></i> Folder
             </button>
-            <button v-if="!creating_folder && !editing_folders" type="button" class="btn btn-sm btn-outline-secondary ph-3" @click="editing_folders = true">
+            <button v-if="!creating_folder && !editing_folders" type="button" class="btn btn-sm btn-outline-secondary mb-2" @click="editing_folders = true">
                 <i class="fa fa-edit"></i> Edit
             </button>
 
@@ -55,10 +55,10 @@
 
 
             <div style="width:100%; text-align:right;">
-                <button v-if="creating_folder" type="button" class="btn btn-sm btn-outline-primary ph-3" @click="saveFolder">
+                <button v-if="creating_folder" type="button" class="btn btn-sm btn-outline-primary mb-2" @click="saveFolder">
                     <i class="fa fa-save"></i> Save
                 </button>
-                <button v-if="creating_folder" type="button" class="btn btn-sm btn-outline-secondary ph-3" @click="creating_folder = false; new_folder_name = ''">
+                <button v-if="creating_folder" type="button" class="btn btn-sm btn-outline-secondary mb-2" @click="creating_folder = false; new_folder_name = ''">
                     <i class="fa fa-times"></i> Cancel
                 </button>
             </div>
@@ -69,7 +69,7 @@
                     <option :value="folder">{{ folder.name }}</option>
                 </template>
             </select>
-            <input v-if="editing_folders && selected_folder != {}"
+            <input v-if="editing_folders && selected_folder.id"
             @keyup.enter="updateFolder"
             type="text"
             class="form-control"
@@ -79,10 +79,13 @@
             />
 
             <div style="width:100%; text-align:right;">
-                <button v-if="editing_folders" type="button" class="btn btn-sm btn-outline-primary ph-3" @click="updateFolder">
-                    <i class="fa fa-save"></i> Update
+                <button v-if="editing_folders && selected_folder.id" type="button" class="btn btn-sm btn-outline-danger pull-left mb-2" @click="deleteFolder">
+                    <i class="fa fa-trash"></i>
                 </button>
-                <button v-if="editing_folders" type="button" class="btn btn-sm btn-outline-secondary ph-3" @click="editing_folders = false;">
+                <button v-if="editing_folders && selected_folder.id" type="button" class="btn btn-sm btn-outline-primary mb-2" @click="updateFolder">
+                    <i class="fa fa-save"></i>
+                </button>
+                <button v-if="editing_folders" type="button" class="btn btn-sm btn-outline-secondary mb-2" @click="editing_folders = false;">
                     <i class="fa fa-times"></i> Cancel
                 </button>
             </div>
@@ -133,8 +136,6 @@ export default {
                 axios.post('/api/notes_folders', formData)
                 .then(response => {
 
-                    console.log(response.status);
-
                     if(response.status == 200){
                         vm.saving = false;
                         vm.errors = {};
@@ -164,8 +165,6 @@ export default {
                 axios.post('/api/notes_folders/' + this.selected_folder.id, formData)
                 .then(response => {
 
-                    console.log(response.status);
-
                     if(response.status == 200){
                         vm.updating = false;
                         vm.errors = {};
@@ -180,8 +179,10 @@ export default {
                     vm.updating = false;
                 })
             }
-
         },
+        deleteFolder(){
+            eventBus.$emit('noteFolderDeleteModalShow', this.selected_folder);
+        }
     }
 }
 </script>
@@ -189,7 +190,7 @@ export default {
 #notes-folders{
     display: flex;
     flex-direction: column;
-    width: 25%;
+    width: 30%;
     background-color: #e2e6e9;
     font-weight: bold;
 }

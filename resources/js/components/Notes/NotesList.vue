@@ -3,8 +3,8 @@
         <div class="d-flex flex-column">
             <template v-if="notes.length > 0">
                 <template v-for="note in notes">
-                    <router-link :to="{ name: 'note', params: { note_id: note.id }, query: $route.query }">
-                        <div class="p-2 note-preview" :style="{background: note.color + ''}">
+                    <router-link :to="{ name: 'note', params: { note_id: note.id }, query: $route.query }" :style="{ background: note.color }">
+                        <div class="p-2 note-preview">
                             <span class="note-title" v-html="$options.filters.highlight(note.title, $route.query.search)"></span><br />
                             <span class="note-subtitle">{{ note.updated_at.date | date_to_human_short }}&nbsp;&nbsp;&nbsp;&nbsp;{{ note.subtitle }}</span><br />
                             <span class="note-folder" v-if="note.note_folder_id">
@@ -39,7 +39,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 #notes-list{
-    width: 25%;
+    width: 35%;
 }
 
 a {
@@ -47,8 +47,8 @@ a {
   text-decoration: none; /* no underline */
 }
 
-.router-link-exact-active, .router-link-active{
-    background: #788088 !important;
+.router-link-exact-active > .note-preview, .router-link-active > .note-preview{
+    background: rgba(0,0,0, 0.4) !important;
     color: #fff;
     font-weight: bold;
 }
@@ -58,7 +58,7 @@ a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-bottom: 1px solid #e2e6e9;
+    // border-bottom: 1px solid #e2e6e9;
 }
 
 .note-title{
@@ -76,7 +76,7 @@ a {
 }
 
 .note-preview:hover{
-    background-color: rgb(253, 222, 128) !important;
+    background-color: rgba(253, 222, 128, 0.8) !important;
 }
 
 

@@ -5,20 +5,22 @@
                 <div class="dimmer" :class="{ 'active' : saving }">
                     <div class="loader"></div>
                     <p class="dimmer-message">
-                        Please wait while the note is being deleted...
+                        Please wait while the folder is being deleted...
                     </p>
                 </div>
+
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa fa-trash"></i> Delete Note</h5>
+                    <h5 class="modal-title"><i class="fa fa-trash"></i> Delete Folder</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    {{ note.title }}
+                <div class="modal-body pt-5 pb-5">
+                    {{ folder.name }}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" :disabled="saving" @click="deleteNote">Delete</button>
+                    <button type="button" class="btn btn-danger" :disabled="saving" @click="deleteFolder(true)">Delete with notes</button>
+                    <button type="button" class="btn btn-danger" :disabled="saving" @click="deleteFolder(false)">Delete without notes</button>
                     <button type="button" class="btn btn-secondary" :disabled="saving" @click="closeModal">Cancel</button>
                 </div>
             </div>
@@ -29,34 +31,29 @@
 import { eventBus } from '../../app';
 
 export default {
-    name: "NoteDeleteModal",
-    props: {
-        'note': {
-            type: Object,
-            required: true
-        }
-    },
+    name: "NoteFolderDeleteModal",
     data: () => ({
+        folder: {},
         saving: false,
     }),
     created() {
         let self = this;
-        eventBus.$on('noteDeleteModalShow', self.showModal);
+        eventBus.$on('noteFolderDeleteModalShow', self.showModal);
     },
     mounted() {
         $(this.$el).on('hidden.bs.modal', function (event) {
-            eventBus.$emit('NoteDeleteModalClosed');
+            eventBus.$emit('noteFolderDeleteModalClosed');
         })
     },
     methods: {
-        deleteNote(){
+        deleteFolder(){
             var self = this;
             if(self.saving != true){
                 self.saving = true;
-                axios.delete('/api/notes/' + this.note.id)
+                axios.delete('/api/notes_folders/' + this.folder.id)
                 .then(response => {
                     if(response.data.status == 'deleted'){
-                        eventBus.$emit('noteDeleted', { note_id : this.note.id });
+                        eventBus.$emit('noteFolderDeleted', { folder_id : this.folder.id });
                         $(this.$el).modal('hide');
                         $('body').removeClass('modal-open');
                         $('.modal-backdrop').remove();
@@ -68,7 +65,8 @@ export default {
                 })
             }
         },
-        showModal() {
+        showModal(event) {
+            this.folder = event;
             $(this.$el).modal('show');
         },
         closeModal() {

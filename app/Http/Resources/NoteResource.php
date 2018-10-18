@@ -21,6 +21,7 @@ class NoteResource extends JsonResource
             'content' => $this->content,
             'note_folder_id' => $this->note_folder_id,
             'folder' => $this->folder,
+            'color' => $this->color,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

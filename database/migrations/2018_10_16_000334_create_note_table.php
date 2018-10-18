@@ -19,7 +19,7 @@ class CreateNoteTable extends Migration
             $table->string('subtitle')->nullable();
             $table->longText('content')->nullable();
 
-            $table->string('color')->nullable();
+            $table->string('color')->default('#FFFFFF');
             $table->integer('note_folder_id')->unsigned()->nullable();
 
             $table->timestamps();

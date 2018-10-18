@@ -33,12 +33,6 @@ export default {
         let img = document.getElementById("myimage");
         img.onload = function() { vm.appendZoomLens("myimage", "myresult"); }
     },
-    beforeRouteEnter (to, from, next) {
-        console.log("bre");
-    },
-    beforeRouteUpdate (to, from, next) {
-        console.log("bru");
-    },
     methods: {
         appendZoomLens(imgID, resultID) {
             var img, lens, result, cx, cy;

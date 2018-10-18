@@ -21,8 +21,10 @@ Route::delete('images/{id}', 'API\ImagesController@delete');
 Route::get('notes_folders', 'API\NotesFoldersController@index');
 Route::post('notes_folders', 'API\NotesFoldersController@createNew');
 Route::post('notes_folders/{id}', 'API\NotesFoldersController@update');
+Route::delete('notes_folders/{id}', 'API\NotesFoldersController@delete');
 
 Route::get('notes', 'API\NotesController@index');
 Route::get('notes/{id}', 'API\NotesController@getNote');
 Route::post('notes', 'API\NotesController@createNew');
+Route::post('notes/{id}', 'API\NotesController@update');
 Route::delete('notes/{id}', 'API\NotesController@delete');

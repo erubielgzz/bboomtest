@@ -85,11 +85,12 @@ export default {
         eventBus.$on('imageDeleted', function (response) {
             if(vm.$route.params.image_id == response.image_id){
                 vm.$router.push({ name: 'images', query: vm.$route.query });
-            }else{
-                getImages(vm.$route.query.page, (err, data) => {
-                    vm.setImages(err, data);
-                });
             }
+
+            getImages(vm.$route.query.page, (err, data) => {
+                vm.setImages(err, data);
+            });
+
         });
     },
     watch: {
@@ -103,7 +104,6 @@ export default {
         }
     },
     beforeRouteEnter (to, from, next) {
-        console.log(1);
         getImages(to.query.page, (err, data) => {
             next(vm => vm.setImages(err, data));
         });

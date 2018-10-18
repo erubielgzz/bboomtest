@@ -9,6 +9,7 @@ use App\Models\Note as Note;
 use App\Http\Resources\NoteResource;
 
 use DB;
+use Validator;
 
 class NotesController extends Controller
 {
@@ -46,5 +47,54 @@ class NotesController extends Controller
         $data['note'] = $this->getNote($note->id);
 
 		return response()->json($data, 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|min:2',
+        ]);
+
+        if ($validator->fails()) {
+	        $data['errors'] = $validator->errors();
+ 			return response()->json($data, 400);
+        }
+
+	    DB::beginTransaction();
+        $note = Note::findOrFail($id);
+
+        $auxArr = explode("<br>", $request->content);
+
+        $title = substr(strip_tags(html_entity_decode($auxArr[0])), 0, 200);
+
+        $subtitle="";
+        if(sizeof($auxArr) >= 2){
+            array_shift($auxArr);
+            $subtitle = substr(strip_tags(html_entity_decode(implode('<br>', $auxArr))), 0, 200);
+        }
+
+        $note->title = $title;
+        $note->subtitle = $subtitle;
+        $note->content = $request->content;
+        $note->color = $request->color;
+        $note->note_folder_id = ( $request->note_folder_id ? $request->note_folder_id : NULL);
+		$note->update();
+
+		DB::commit();
+
+        $data['note'] = $this->getNote($note->id);
+
+		return response()->json($data, 200);
+    }
+
+    public function delete($id){
+
+        $note = Note::findOrFail($id);
+        $note->delete();
+
+        $data['status'] = "deleted";
+
+        return response()->json($data);
     }
 }

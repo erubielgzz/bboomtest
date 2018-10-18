@@ -2,7 +2,7 @@
     <div id="notes-menu">
 
         <div class="pull-right" style="width:40%;">
-            <input type="text" class="form-control" placeholder="Search" v-model="$route.query.search" @keyup="search()">
+            <input type="text" class="form-control" placeholder="Search" v-model="searchQry" @keyup="search()">
         </div>
 
         <div class="btn-toolbar" role="toolbar">
@@ -36,16 +36,6 @@ export default {
         saving: false,
         searchQry: ''
     }),
-    watch: {
-        auxSearch(newValue) {
-            this.searchQry = newValue;
-        }
-    },
-    computed: {
-        auxSearch() {
-            return this.$route.query.search;
-        }
-    },
     methods: {
         switchFolderMenu() {
             if(this.folder_menu_open){
@@ -68,7 +58,6 @@ export default {
                 axios.post('/api/notes', formData)
                 .then(response => {
 
-                    console.log(response.status);
 
                     if(response.status == 200){
                         vm.saving = false;
@@ -86,7 +75,11 @@ export default {
             eventBus.$emit('noteDeleteModalShow');
         },
         search: _.debounce(function (e) {
-            // this.$router.push({ name: 'note', params: this.$route.params, query: { search: this.$route.query.search } })
+            if(this.$route.query.folder){
+                this.$router.push({ name: 'note', params: this.$route.params, query: { search: this.searchQry, folder: this.$route.query.folder } })
+            }else{
+                this.$router.push({ name: 'note', params: this.$route.params, query: { search: this.searchQry } })
+            }
         }, 400),
     }
 }

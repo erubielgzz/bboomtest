@@ -63,8 +63,6 @@ export default {
                 axios.post('/api/images', formData)
                 .then(response => {
 
-                    console.log(response.status);
-
                     if(response.status == 200){
                         vm.uploading = false;
                         vm.errors = {};
@@ -166,6 +164,10 @@ export default {
 img{
     max-width: 100%;
     max-height: 400px;
+}
+
+.loader{
+    border-top: 12px solid #3490dc;
 }
 
 </style>

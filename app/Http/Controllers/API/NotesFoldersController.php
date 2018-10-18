@@ -52,7 +52,7 @@ class NotesFoldersController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:2|unique:note_folder,name',
+            'name' => 'required|string|min:2|unique:note_folder,name,'.$id,
         ]);
 
         if ($validator->fails()) {
@@ -71,6 +71,16 @@ class NotesFoldersController extends Controller
         $data['folder'] = $this->getNotesFolder($notes_folder->id);
 
 		return response()->json($data, 200);
+    }
+
+    public function delete($id){
+
+        $notes_folder = NoteFolder::findOrFail($id);
+        $notes_folder->delete();
+
+        $data['status'] = "deleted";
+
+        return response()->json($data);
     }
 
 }

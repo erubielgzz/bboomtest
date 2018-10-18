@@ -2,6 +2,12 @@
     <div class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <div class="dimmer" :class="{ 'active' : saving }">
+                    <div class="loader"></div>
+                    <p class="dimmer-message">
+                        Please wait while the image is being deleted...
+                    </p>
+                </div>
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fa fa-trash"></i> Delete Image</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -9,12 +15,6 @@
                     </button>
                 </div>
                 <div class="modal-body pt-5 pb-5">
-                    <div class="dimmer" :class="{ 'active' : saving }">
-                        <div class="loader"></div>
-                        <p class="dimmer-message">
-                            Please wait while the image is being deleted...
-                        </p>
-                    </div>
                     <img :src="image.path" alt="">
                 </div>
                 <div class="modal-footer">
@@ -60,7 +60,6 @@ export default {
                 })
                 .catch(e => {
                     self.saving = false;
-                    requestSystemErrorToast(e, self);
                 })
             }
         },
