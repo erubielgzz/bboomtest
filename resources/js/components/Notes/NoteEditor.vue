@@ -65,7 +65,8 @@
             class="text-muted"
             style="font-size: 0.9em; display: block; min-height:300px;"
             @keyup="updateNote"
-            ><span v-html="note.content"></span></span>
+            v-html="note.content"
+            ></span>
 
         </div>
 
