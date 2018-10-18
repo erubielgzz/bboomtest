@@ -52,12 +52,12 @@
             Updated at: {{ note.updated_at.date | date_to_human_short }} {{ note.updated_at.date | hour_to_human }}
         </small>
         <div class="p-4" style="max-height:400px; overflow-x:scroll;">
-            <div
+            <span
             v-if="!edit"
             @click="edit = !edit"
             class="text-muted" style="font-size: 0.9em; display: block;"
-            v-html="$options.filters.highlight(noteOrPlaceholder, $route.query.search)"
-            ></div>
+            v-html="noteOrPlaceholder"
+            ></span>
 
             <span
             v-if="edit"
