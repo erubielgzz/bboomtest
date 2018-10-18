@@ -79,9 +79,9 @@
             />
 
             <div style="width:100%; text-align:right;">
-                <button v-if="editing_folders && selected_folder.id" type="button" class="btn btn-sm btn-outline-danger pull-left mb-2" @click="deleteFolder">
+                <!-- <button v-if="editing_folders && selected_folder.id" type="button" class="btn btn-sm btn-outline-danger pull-left mb-2" @click="deleteFolder">
                     <i class="fa fa-trash"></i>
-                </button>
+                </button> -->
                 <button v-if="editing_folders && selected_folder.id" type="button" class="btn btn-sm btn-outline-primary mb-2" @click="updateFolder">
                     <i class="fa fa-save"></i>
                 </button>
