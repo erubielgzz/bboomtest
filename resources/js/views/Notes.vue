@@ -9,20 +9,19 @@
                 <div class="d-flex bg-light border" style="height:500px">
                     <notes-folders :folders="notes_folders"></notes-folders>
                     <notes-list :notes="notes"></notes-list>
-                    <div id="note-container" class="p-0 border">
-                        <notes-sub-menu></notes-sub-menu>
-                        <note-editor></note-editor>
-                    </div>
+                    <note-editor :note="note"></note-editor>
                 </div>
             </div>
 
         </div>
+
+        <note-delete-modal :note="note"></note-delete-modal>
+
     </div>
 </template>
 <script>
 
 import NotesMenu from '../components/Notes/NotesMenu'
-import NotesSubMenu from '../components/Notes/NotesSubMenu'
 import NotesFolders from '../components/Notes/NotesFolders'
 import NotesList from '../components/Notes/NotesList'
 import NoteEditor from '../components/Notes/NoteEditor'
@@ -39,8 +38,8 @@ const getNotesFolders = (callback) => {
     });
 };
 
-const getNotes = (page, callback) => {
-    const params = { page };
+const getNotes = (folder, search, callback) => {
+    const params = { folder, search };
 
     axios
     .get('/api/notes', { params })
@@ -51,55 +50,97 @@ const getNotes = (page, callback) => {
     });
 };
 
+const getNote = (note_id, callback) => {
+
+    axios
+    .get('/api/notes/' + note_id)
+    .then(response => {
+        callback(null, response.data);
+    }).catch(error => {
+        callback(error, error.response.data);
+    });
+};
+
+
 export default {
     name: "",
     data: () => ({
+        note:{
+            title: '',
+            subtitle: '',
+            content: '',
+            created_at: {},
+            updated_at: {}
+        },
         notes_folders: [],
         notes: []
     }),
     beforeRouteEnter (to, from, next) {
-        function getCompanyDetails() {
-            return  axios.get('/getCompanyDetails')
+
+        var p1 = new Promise((resolve, reject) => {
+            getNotesFolders((err, data) => {
+                if(err == null){
+                    resolve({err, data})
+                }else{
+                    reject({err, data})
+                }
+            });
+        });
+
+        var p2 = new Promise((resolve, reject) => {
+            getNotes(to.query.folder, to.query.search, (err, data) => {
+                if(err == null){
+                    resolve({err, data})
+                }else{
+                    reject({err, data})
+                }
+            });
+        });
+
+        var auxArr = [p1, p2];
+
+        if(to.params.note_id){
+            var p3 = new Promise((resolve, reject) => {
+                getNote(to.params.note_id, (err, data) => {
+                    if(err == null){
+                        resolve({err, data})
+                    }else{
+                        reject({err, data})
+                    }
+                });
+            });
+            auxArr.push(p3);
         }
 
-        function getUsers() {
-            return axios.get('/getusers');
-        }
 
-        axios.all([getCompanyDetails(), getUsers()])
-            .then(axios.spread(function (company_details, company_users) {
-                next((vm) => { vm.setUser(err, company_users); vm.setDetails(err, company_details); })
-            }));
+        console.log(auxArr);
 
+        Promise.all(auxArr).then(values => {
+            next(vm => {
+                vm.setNotesFolders(values[0].err, values[0].data)
+                vm.setNotes(values[1].err, values[1].data)
+                if(to.params.note_id){
+                    vm.setNote(values[2].err, values[2].data)
+                }
+            });
+        })
 
-        // axios.all([getNotesFolders(err, data), getNotes(err, data)])
-        // .then(axios.spread(function (notes_folders, notes) {
-        //     next((vm) => { vm.setNotesFolders(err, notes_folders); vm.setNotes(err, notes); })
-        // }));
     },
-    // beforeRouteEnter (to, from, next) {
-    //     var err1, err2, data1, data2;
-    //
-    //     getNotesFolders((err, data) => {
-    //         console.log(data);
-    //         err1 = err;
-    //         data1 = data;
-    //     });
-    //     getNotes(to.query.page, (err, data) => {
-    //         console.log(data);
-    //         err2 = err;
-    //         data2 = data;
-    //     });
-    //
-    //     next((vm) => {
-    //         console.log(data1);
-    //         console.log(data2);
-    //
-    //         vm.setNotesFolders(err1, data1);
-    //         vm.setNotes(err2, data2)
-    //     });
-    //
-    // },
+    beforeRouteUpdate(to, from, next) {
+        if(to.query.folder != from.query.folder || to.query.search != from.query.search){
+            getNotes(to.query.folder, to.query.search, (err, data) => {
+                this.setNotes(err, data);
+            });
+        }
+
+        if(to.params.note_id != from.params.note_id && to.params.note_id != null){
+            getNote(to.params.note_id, (err, data) => {
+                this.setNote(null, data);
+            });
+        }
+
+        next();
+    },
     methods: {
         setNotesFolders(err, { data: notes_folders }) {
             if (err) {
@@ -115,10 +156,17 @@ export default {
                 this.notes = notes;
             }
         },
+        setNote(err, { data: note }) {
+            if (err) {
+                this.error = err.toString();
+                this.$router.push({ name: 'not-found'})
+            } else {
+                this.note = note;
+            }
+        },
     },
     components: {
         NotesMenu: NotesMenu,
-        NotesSubMenu: NotesSubMenu,
         NotesFolders: NotesFolders,
         NotesList: NotesList,
         NoteEditor: NoteEditor,
@@ -127,11 +175,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
-#note-container{
-    width: 75%;
-}
-
 .notes-main-container{
     width: 100%;
     background: #ffffff;

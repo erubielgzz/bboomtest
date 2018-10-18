@@ -11,6 +11,8 @@ window.Popper = require('popper.js').default;
 try {
     window.$ = window.jQuery = require('jquery');
 
+    window.moment = require('moment');
+
     require('bootstrap');
 } catch (e) {}
 
@@ -54,3 +56,17 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+var accent_map = {
+  'á':'a', 'é':'e', 'í':'i','ó':'o','ú':'u'
+};
+
+accent_fold = function(s) {
+
+  if (!s) { return ''; }
+  var ret = '';
+  for (var i = 0; i < s.length; i++) {
+    ret += accent_map[s.charAt(i)] || s.charAt(i);
+  }
+  return ret;
+};

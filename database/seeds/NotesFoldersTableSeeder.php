@@ -16,7 +16,6 @@ class NotesFoldersTableSeeder extends Seeder
         $folders = array(
             ['name' => 'Folder A'],
             ['name' => 'Folder B'],
-            ['name' => 'Folder C'],
         );
 
         foreach($folders as $folder){

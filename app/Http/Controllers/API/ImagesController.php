@@ -18,7 +18,7 @@ class ImagesController extends Controller
 
     public function index()
     {
-        return ImageResource::collection(Image::paginate(6));
+        return ImageResource::collection(Image::orderBy('created_at', 'DESC')->paginate(6));
     }
 
     public function getImage($id)

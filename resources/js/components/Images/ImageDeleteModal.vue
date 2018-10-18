@@ -8,7 +8,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body pt-5 pb-5">
                     <div class="dimmer" :class="{ 'active' : saving }">
                         <div class="loader"></div>
                         <p class="dimmer-message">

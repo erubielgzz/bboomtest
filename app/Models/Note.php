@@ -13,4 +13,9 @@ class Note extends Model
      */
     protected $table = 'note';
 
+    public function folder()
+    {
+        return $this->belongsTo('App\Models\NoteFolder', 'note_folder_id', 'id');
+    }
+
 }

@@ -537,6 +537,46 @@ var eventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.filter('date_to_human_short', function (value) {
+    return moment(value).format("D/MMM/YYYY");
+});
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.filter('hour_to_human', function (value) {
+    return moment(value).format("hh:mm a");
+});
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.filter('highlight', function (str, q) {
+    if (!str) return "";
+    if (!q) return str;
+
+    var str_folded = accent_fold(str).toLowerCase().replace(/[<>]+/g, '');
+    var q_folded = accent_fold(q).toLowerCase().replace(/[<>]+/g, ''); // Create an intermediate string with hilite hints
+    // Example: fulani<lo> <lo>pez
+    var re = new RegExp(q_folded, 'g');
+    var hilite_hints = str_folded.replace(re, '<' + q_folded + '>'); // Index pointer for the original string
+    var spos = 0;
+    // Accumulator for our final string
+    var highlighted = ''; // Walk down the original string and the hilite hint
+    // string in parallel. When you encounter a < or > hint,
+    // append the opening / closing tag in our final string.
+    // If the current char is not a hint, append the equiv.
+    // char from the original string to our final string and
+    // advance the original string's pointer.
+    for (var i = 0; i < hilite_hints.length; i++) {
+        var c = str.charAt(spos);
+        var h = hilite_hints.charAt(i);
+        if (h === '<') {
+            highlighted += '<span style="background-color:yellow;">';
+        } else if (h === '>') {
+            highlighted += '</span>';
+        } else {
+            spos += 1;
+            highlighted += c;
+        }
+    }
+    return highlighted;
+});
+
 
 
 
@@ -15378,8 +15418,6 @@ var getImage = function getImage(image_id, callback) {
             if (vm.$route.params.image_id == response.image_id) {
                 vm.$router.push({ name: 'images', query: vm.$route.query });
             } else {
-                vm.images = [];
-                vm.links = vm.meta = {};
                 getImages(vm.$route.query.page, function (err, data) {
                     vm.setImages(err, data);
                 });
@@ -15400,6 +15438,7 @@ var getImage = function getImage(image_id, callback) {
         }
     },
     beforeRouteEnter: function beforeRouteEnter(to, from, next) {
+        console.log(1);
         getImages(to.query.page, function (err, data) {
             next(function (vm) {
                 return vm.setImages(err, data);
@@ -15409,12 +15448,12 @@ var getImage = function getImage(image_id, callback) {
     beforeRouteUpdate: function beforeRouteUpdate(to, from, next) {
         var _this2 = this;
 
-        this.images = [];
-        this.links = this.meta = {};
-        getImages(to.query.page, function (err, data) {
-            _this2.setImages(err, data);
-            next();
-        });
+        if (to.query.page != from.query.page || to.params.image_id != null && from.params.image_id == null) {
+            getImages(to.query.page, function (err, data) {
+                _this2.setImages(err, data);
+            });
+        }
+        next();
     },
 
     computed: {
@@ -16936,7 +16975,7 @@ var render = function() {
         _c("div", { staticClass: "modal-content" }, [
           _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "modal-body" }, [
+          _c("div", { staticClass: "modal-body pt-5 pb-5" }, [
             _c(
               "div",
               { staticClass: "dimmer", class: { active: _vm.saving } },
@@ -17187,7 +17226,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n#note-container[data-v-36bba69c] {\n  width: 75%;\n}\n.notes-main-container[data-v-36bba69c] {\n  width: 100%;\n  background: #ffffff;\n}\n", ""]);
+exports.push([module.i, "\n.notes-main-container[data-v-36bba69c] {\n  width: 100%;\n  background: #ffffff;\n}\n", ""]);
 
 // exports
 
@@ -17200,16 +17239,14 @@ exports.push([module.i, "\n#note-container[data-v-36bba69c] {\n  width: 75%;\n}\
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Notes_NotesMenu__ = __webpack_require__(66);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Notes_NotesMenu___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Notes_NotesMenu__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesSubMenu__ = __webpack_require__(71);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesSubMenu___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesSubMenu__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesFolders__ = __webpack_require__(76);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesFolders___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesFolders__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Notes_NotesList__ = __webpack_require__(81);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Notes_NotesList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_Notes_NotesList__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteEditor__ = __webpack_require__(86);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteEditor___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteEditor__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Notes_NoteDeleteModal__ = __webpack_require__(91);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Notes_NoteDeleteModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_Notes_NoteDeleteModal__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesFolders__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesFolders___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesFolders__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesList__ = __webpack_require__(81);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesList__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Notes_NoteEditor__ = __webpack_require__(86);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Notes_NoteEditor___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_Notes_NoteEditor__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteDeleteModal__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteDeleteModal___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteDeleteModal__);
 //
 //
 //
@@ -17231,7 +17268,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-
 
 
 
@@ -17249,10 +17285,19 @@ var getNotesFolders = function getNotesFolders(callback) {
     });
 };
 
-var getNotes = function getNotes(page, callback) {
-    var params = { page: page };
+var getNotes = function getNotes(folder, search, callback) {
+    var params = { folder: folder, search: search };
 
     axios.get('/api/notes', { params: params }).then(function (response) {
+        callback(null, response.data);
+    }).catch(function (error) {
+        callback(error, error.response.data);
+    });
+};
+
+var getNote = function getNote(note_id, callback) {
+
+    axios.get('/api/notes/' + note_id).then(function (response) {
         callback(null, response.data);
     }).catch(function (error) {
         callback(error, error.response.data);
@@ -17263,54 +17308,84 @@ var getNotes = function getNotes(page, callback) {
     name: "",
     data: function data() {
         return {
+            note: {
+                title: '',
+                subtitle: '',
+                content: '',
+                created_at: {},
+                updated_at: {}
+            },
             notes_folders: [],
             notes: []
         };
     },
     beforeRouteEnter: function beforeRouteEnter(to, from, next) {
-        function getCompanyDetails() {
-            return axios.get('/getCompanyDetails');
-        }
 
-        function getUsers() {
-            return axios.get('/getusers');
-        }
-
-        axios.all([getCompanyDetails(), getUsers()]).then(axios.spread(function (company_details, company_users) {
-            next(function (vm) {
-                vm.setUser(err, company_users);vm.setDetails(err, company_details);
+        var p1 = new Promise(function (resolve, reject) {
+            getNotesFolders(function (err, data) {
+                if (err == null) {
+                    resolve({ err: err, data: data });
+                } else {
+                    reject({ err: err, data: data });
+                }
             });
-        }));
+        });
 
-        // axios.all([getNotesFolders(err, data), getNotes(err, data)])
-        // .then(axios.spread(function (notes_folders, notes) {
-        //     next((vm) => { vm.setNotesFolders(err, notes_folders); vm.setNotes(err, notes); })
-        // }));
+        var p2 = new Promise(function (resolve, reject) {
+            getNotes(to.query.folder, to.query.search, function (err, data) {
+                if (err == null) {
+                    resolve({ err: err, data: data });
+                } else {
+                    reject({ err: err, data: data });
+                }
+            });
+        });
+
+        var auxArr = [p1, p2];
+
+        if (to.params.note_id) {
+            var p3 = new Promise(function (resolve, reject) {
+                getNote(to.params.note_id, function (err, data) {
+                    if (err == null) {
+                        resolve({ err: err, data: data });
+                    } else {
+                        reject({ err: err, data: data });
+                    }
+                });
+            });
+            auxArr.push(p3);
+        }
+
+        console.log(auxArr);
+
+        Promise.all(auxArr).then(function (values) {
+            next(function (vm) {
+                vm.setNotesFolders(values[0].err, values[0].data);
+                vm.setNotes(values[1].err, values[1].data);
+                if (to.params.note_id) {
+                    vm.setNote(values[2].err, values[2].data);
+                }
+            });
+        });
+    },
+    beforeRouteUpdate: function beforeRouteUpdate(to, from, next) {
+        var _this = this;
+
+        if (to.query.folder != from.query.folder || to.query.search != from.query.search) {
+            getNotes(to.query.folder, to.query.search, function (err, data) {
+                _this.setNotes(err, data);
+            });
+        }
+
+        if (to.params.note_id != from.params.note_id && to.params.note_id != null) {
+            getNote(to.params.note_id, function (err, data) {
+                _this.setNote(null, data);
+            });
+        }
+
+        next();
     },
 
-    // beforeRouteEnter (to, from, next) {
-    //     var err1, err2, data1, data2;
-    //
-    //     getNotesFolders((err, data) => {
-    //         console.log(data);
-    //         err1 = err;
-    //         data1 = data;
-    //     });
-    //     getNotes(to.query.page, (err, data) => {
-    //         console.log(data);
-    //         err2 = err;
-    //         data2 = data;
-    //     });
-    //
-    //     next((vm) => {
-    //         console.log(data1);
-    //         console.log(data2);
-    //
-    //         vm.setNotesFolders(err1, data1);
-    //         vm.setNotes(err2, data2)
-    //     });
-    //
-    // },
     methods: {
         setNotesFolders: function setNotesFolders(err, _ref) {
             var notes_folders = _ref.data;
@@ -17329,15 +17404,24 @@ var getNotes = function getNotes(page, callback) {
             } else {
                 this.notes = notes;
             }
+        },
+        setNote: function setNote(err, _ref3) {
+            var note = _ref3.data;
+
+            if (err) {
+                this.error = err.toString();
+                this.$router.push({ name: 'not-found' });
+            } else {
+                this.note = note;
+            }
         }
     },
     components: {
         NotesMenu: __WEBPACK_IMPORTED_MODULE_0__components_Notes_NotesMenu___default.a,
-        NotesSubMenu: __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesSubMenu___default.a,
-        NotesFolders: __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesFolders___default.a,
-        NotesList: __WEBPACK_IMPORTED_MODULE_3__components_Notes_NotesList___default.a,
-        NoteEditor: __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteEditor___default.a,
-        NoteDeleteModal: __WEBPACK_IMPORTED_MODULE_5__components_Notes_NoteDeleteModal___default.a
+        NotesFolders: __WEBPACK_IMPORTED_MODULE_1__components_Notes_NotesFolders___default.a,
+        NotesList: __WEBPACK_IMPORTED_MODULE_2__components_Notes_NotesList___default.a,
+        NoteEditor: __WEBPACK_IMPORTED_MODULE_3__components_Notes_NoteEditor___default.a,
+        NoteDeleteModal: __WEBPACK_IMPORTED_MODULE_4__components_Notes_NoteDeleteModal___default.a
     }
 });
 
@@ -17438,6 +17522,7 @@ exports.push([module.i, "\n#notes-menu[data-v-003c4d92] {\n  width: 100%;\n  bac
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(5);
 //
 //
 //
@@ -17467,10 +17552,67 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "NotesMenu",
     data: function data() {
-        return {};
+        return {
+            folder_menu_open: true,
+            saving: false,
+            searchQry: ''
+        };
+    },
+    watch: {
+        auxSearch: function auxSearch(newValue) {
+            this.searchQry = newValue;
+        }
+    },
+    computed: {
+        auxSearch: function auxSearch() {
+            return this.$route.query.search;
+        }
+    },
+    methods: {
+        switchFolderMenu: function switchFolderMenu() {
+            if (this.folder_menu_open) {
+                $("#notes-folders").animate({ width: 'toggle' }, 100);
+            } else {
+                $("#notes-folders").animate({ width: 'toggle' }, 100);
+            }
+
+            this.folder_menu_open = !this.folder_menu_open;
+        },
+        createNote: function createNote() {
+            var vm = this;
+            if (vm.saving != true) {
+                vm.saving = true;
+
+                var formData = new FormData();
+
+                formData.append('_token', $('meta[name=csrf-token]').attr('content'));
+
+                axios.post('/api/notes', formData).then(function (response) {
+
+                    console.log(response.status);
+
+                    if (response.status == 200) {
+                        vm.saving = false;
+                        vm.errors = {};
+                        vm.$router.push({ name: 'note', params: { note_id: response.data.note.id } });
+                    }
+                }).catch(function (e) {
+                    vm.saving = false;
+                });
+            }
+        },
+        deleteNote: function deleteNote() {
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('noteDeleteModalShow');
+        },
+
+        search: _.debounce(function (e) {
+            // this.$router.push({ name: 'note', params: this.$route.params, query: { search: this.$route.query.search } })
+        }, 400)
     }
 });
 
@@ -17482,49 +17624,81 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "notes-menu" } }, [
-      _c("div", { staticClass: "pull-right", staticStyle: { width: "40%" } }, [
-        _c("input", {
-          staticClass: "form-control",
-          attrs: { type: "text", placeholder: "Search" }
-        })
+  return _c("div", { attrs: { id: "notes-menu" } }, [
+    _c("div", { staticClass: "pull-right", staticStyle: { width: "40%" } }, [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$route.query.search,
+            expression: "$route.query.search"
+          }
+        ],
+        staticClass: "form-control",
+        attrs: { type: "text", placeholder: "Search" },
+        domProps: { value: _vm.$route.query.search },
+        on: {
+          keyup: function($event) {
+            _vm.search()
+          },
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.$set(_vm.$route.query, "search", $event.target.value)
+          }
+        }
+      })
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "btn-toolbar", attrs: { role: "toolbar" } }, [
+      _c("div", { staticClass: "btn-group mr-2", attrs: { role: "group" } }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-secondary",
+            attrs: { type: "button" },
+            on: { click: _vm.switchFolderMenu }
+          },
+          [
+            _c("i", {
+              staticClass: "fa",
+              class: [_vm.folder_menu_open ? "fa-folder" : "fa-folder-open"]
+            })
+          ]
+        )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "btn-toolbar", attrs: { role: "toolbar" } }, [
-        _c("div", { staticClass: "btn-group mr-2", attrs: { role: "group" } }, [
-          _c(
-            "button",
-            { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-            [_c("i", { staticClass: "fa fa-folder" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "btn-group mr-2", attrs: { role: "group" } }, [
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "button" } },
-            [_c("i", { staticClass: "fa fa-plus" })]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "btn-group", attrs: { role: "group" } }, [
-          _c(
-            "button",
-            { staticClass: "btn btn-danger", attrs: { type: "button" } },
-            [_c("i", { staticClass: "fa fa-trash" })]
-          )
-        ])
-      ])
+      _c("div", { staticClass: "btn-group mr-2", attrs: { role: "group" } }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            attrs: { type: "button" },
+            on: { click: _vm.createNote }
+          },
+          [_c("i", { staticClass: "fa fa-plus" })]
+        )
+      ]),
+      _vm._v(" "),
+      _vm.$route.params.note_id
+        ? _c("div", { staticClass: "btn-group", attrs: { role: "group" } }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-danger",
+                attrs: { type: "button" },
+                on: { click: _vm.deleteNote }
+              },
+              [_c("i", { staticClass: "fa fa-trash" })]
+            )
+          ])
+        : _vm._e()
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -17535,152 +17709,11 @@ if (false) {
 }
 
 /***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(72)
-}
-var normalizeComponent = __webpack_require__(0)
-/* script */
-var __vue_script__ = __webpack_require__(74)
-/* template */
-var __vue_template__ = __webpack_require__(75)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = "data-v-2e845217"
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/Notes/NotesSubMenu.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2e845217", Component.options)
-  } else {
-    hotAPI.reload("data-v-2e845217", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(73);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("1cd564fd", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2e845217\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NotesSubMenu.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2e845217\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/sass-loader/lib/loader.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NotesSubMenu.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n#notes-sub-menu[data-v-2e845217] {\n  width: 100%;\n  background: #e2e6e9;\n  padding: 10px;\n  border: 1px solid #e2e6e9;\n  text-align: center;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 74 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    name: "NotesSubMenu",
-    data: function data() {
-        return {};
-    }
-});
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "notes-sub-menu" } }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-sm btn-outline-secondary",
-          attrs: { type: "button" }
-        },
-        [_c("i", { staticClass: "fa fa-folder" })]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-2e845217", module.exports)
-  }
-}
-
-/***/ }),
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
 /* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17777,6 +17810,77 @@ exports.push([module.i, "\n#notes-folders[data-v-0bcd291d] {\n  display: -webkit
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(5);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -17800,6 +17904,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "",
     props: {
@@ -17812,7 +17918,81 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     data: function data() {
-        return {};
+        return {
+            new_folder_name: '',
+            creating_folder: false,
+            selected_folder: {},
+            edited_folder_name: '',
+            editing_folders: false,
+            errors: {},
+            saving: false,
+            updating: false
+        };
+    },
+    watch: {
+        selected_folder: function selected_folder(newValue) {
+            this.edited_folder_name = newValue.name;
+        }
+    },
+    methods: {
+        saveFolder: function saveFolder() {
+            var _this = this;
+
+            var vm = this;
+            if (vm.saving != true) {
+                vm.saving = true;
+
+                var formData = new FormData();
+
+                formData.append('_token', $('meta[name=csrf-token]').attr('content'));
+                formData.append('name', this.new_folder_name);
+
+                axios.post('/api/notes_folders', formData).then(function (response) {
+
+                    console.log(response.status);
+
+                    if (response.status == 200) {
+                        vm.saving = false;
+                        vm.errors = {};
+                        vm.new_folder_name = "";
+                        vm.creating_folder = false;
+                        _this.folders.push(response.data.folder);
+                    }
+                }).catch(function (e) {
+                    vm.errors = e.response.data.errors;
+                    vm.saving = false;
+                });
+            }
+        },
+        updateFolder: function updateFolder() {
+            var _this2 = this;
+
+            var vm = this;
+            if (vm.updating != true) {
+                vm.updating = true;
+
+                var formData = new FormData();
+
+                formData.append('_token', $('meta[name=csrf-token]').attr('content'));
+                formData.append('name', this.edited_folder_name);
+
+                axios.post('/api/notes_folders/' + this.selected_folder.id, formData).then(function (response) {
+
+                    console.log(response.status);
+
+                    if (response.status == 200) {
+                        vm.updating = false;
+                        vm.errors = {};
+                        vm.new_folder_name = "";
+                        vm.editing_folders = false;
+                        _this2.selected_folder.name = response.data.folder.name;
+                    }
+                }).catch(function (e) {
+                    vm.errors = e.response.data.errors;
+                    vm.updating = false;
+                });
+            }
+        }
     }
 });
 
@@ -17830,71 +18010,400 @@ var render = function() {
     [
       _vm._m(0),
       _vm._v(" "),
-      _c(
-        "ul",
-        { staticClass: "nav flex-column navbar-dark" },
-        [
-          _c(
-            "li",
-            { staticClass: "nav-item" },
-            [
-              _c(
-                "router-link",
-                {
-                  staticClass: "nav-link",
-                  attrs: {
-                    to: {
-                      path: "",
-                      params: _vm.$route.params,
-                      query: { search: _vm.$route.query.search }
-                    },
-                    append: ""
-                  }
-                },
-                [_vm._v("\n                All\n            ")]
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _vm._l(_vm.folders, function(folder) {
-            return _c(
+      _c("div", { staticStyle: { height: "300px", "overflow-x": "scroll" } }, [
+        _c(
+          "ul",
+          { staticClass: "nav flex-column navbar-dark" },
+          [
+            _c(
               "li",
               { staticClass: "nav-item" },
               [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "nav-link",
-                    attrs: {
-                      to: {
-                        path: "",
-                        params: _vm.$route.params,
-                        query: {
-                          folder: folder.id,
-                          search: _vm.$route.query.search
+                _vm.$route.query.search
+                  ? _c(
+                      "router-link",
+                      {
+                        staticClass: "nav-link",
+                        attrs: {
+                          to: {
+                            name: _vm.$route.name,
+                            params: _vm.$route.params,
+                            query: { search: _vm.$route.query.search }
+                          }
                         }
                       },
-                      append: ""
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                " +
-                        _vm._s(folder.name) +
-                        "\n            "
+                      [_vm._v("\n                    All\n                ")]
                     )
-                  ]
-                )
+                  : _c(
+                      "router-link",
+                      {
+                        staticClass: "nav-link",
+                        attrs: {
+                          to: {
+                            name: _vm.$route.name,
+                            params: _vm.$route.params
+                          }
+                        }
+                      },
+                      [_vm._v("\n                    All\n                ")]
+                    )
               ],
               1
-            )
-          })
-        ],
-        2
-      ),
+            ),
+            _vm._v(" "),
+            _c(
+              "li",
+              {
+                staticClass: "nav-item",
+                staticStyle: { "margin-bottom": "20px" }
+              },
+              [
+                _vm.$route.query.search
+                  ? _c(
+                      "router-link",
+                      {
+                        staticClass: "nav-link",
+                        attrs: {
+                          to: {
+                            name: _vm.$route.name,
+                            params: _vm.$route.params,
+                            query: {
+                              folder: "no-folder",
+                              search: _vm.$route.query.search
+                            }
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    Notes without folder\n                "
+                        )
+                      ]
+                    )
+                  : _c(
+                      "router-link",
+                      {
+                        staticClass: "nav-link",
+                        attrs: {
+                          to: {
+                            name: _vm.$route.name,
+                            params: _vm.$route.params,
+                            query: { folder: "no-folder" }
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    Notes without folder\n                "
+                        )
+                      ]
+                    )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.folders, function(folder) {
+              return _c(
+                "li",
+                { staticClass: "nav-item" },
+                [
+                  _vm.$route.query.search
+                    ? _c(
+                        "router-link",
+                        {
+                          staticClass: "nav-link",
+                          attrs: {
+                            to: {
+                              name: _vm.$route.name,
+                              params: _vm.$route.params,
+                              query: {
+                                folder: folder.id,
+                                search: _vm.$route.query.search
+                              }
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(folder.name) +
+                              "\n                "
+                          )
+                        ]
+                      )
+                    : _c(
+                        "router-link",
+                        {
+                          staticClass: "nav-link",
+                          attrs: {
+                            to: {
+                              name: _vm.$route.name,
+                              params: _vm.$route.params,
+                              query: { folder: folder.id }
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(folder.name) +
+                              "\n                "
+                          )
+                        ]
+                      )
+                ],
+                1
+              )
+            })
+          ],
+          2
+        )
+      ]),
       _vm._v(" "),
-      _vm._m(1)
+      _c("div", { staticClass: "mt-auto p-2" }, [
+        !_vm.creating_folder && !_vm.editing_folders
+          ? _c(
+              "button",
+              {
+                staticClass: "btn btn-sm btn-outline-secondary ph-3",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    _vm.creating_folder = true
+                  }
+                }
+              },
+              [
+                _c("i", { staticClass: "fa fa-plus" }),
+                _vm._v(" Folder\n        ")
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        !_vm.creating_folder && !_vm.editing_folders
+          ? _c(
+              "button",
+              {
+                staticClass: "btn btn-sm btn-outline-secondary ph-3",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    _vm.editing_folders = true
+                  }
+                }
+              },
+              [
+                _c("i", { staticClass: "fa fa-edit" }),
+                _vm._v(" Edit\n        ")
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.creating_folder
+          ? _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.new_folder_name,
+                  expression: "new_folder_name"
+                }
+              ],
+              staticClass: "form-control",
+              staticStyle: { "margin-bottom": "10px" },
+              attrs: { type: "text", placeholder: "New folder's name" },
+              domProps: { value: _vm.new_folder_name },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !("button" in $event) &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.saveFolder($event)
+                },
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.new_folder_name = $event.target.value
+                }
+              }
+            })
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.errors.name
+          ? _c("div", { staticClass: "alert alert-danger" }, [
+              _vm._v(
+                "\n            " + _vm._s(_vm.errors.name[0]) + "\n        "
+              )
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticStyle: { width: "100%", "text-align": "right" } }, [
+          _vm.creating_folder
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-outline-primary ph-3",
+                  attrs: { type: "button" },
+                  on: { click: _vm.saveFolder }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-save" }),
+                  _vm._v(" Save\n            ")
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.creating_folder
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-outline-secondary ph-3",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.creating_folder = false
+                      _vm.new_folder_name = ""
+                    }
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-times" }),
+                  _vm._v(" Cancel\n            ")
+                ]
+              )
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.editing_folders,
+                expression: "editing_folders"
+              },
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.selected_folder,
+                expression: "selected_folder"
+              }
+            ],
+            staticClass: "custom-select",
+            staticStyle: { "margin-bottom": "10px" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.selected_folder = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c(
+              "option",
+              {
+                attrs: { selected: "", disabled: "" },
+                domProps: { value: {} }
+              },
+              [_vm._v("Choose folder")]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.folders, function(folder) {
+              return [
+                _c("option", { domProps: { value: folder } }, [
+                  _vm._v(_vm._s(folder.name))
+                ])
+              ]
+            })
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _vm.editing_folders && _vm.selected_folder != {}
+          ? _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.edited_folder_name,
+                  expression: "edited_folder_name"
+                }
+              ],
+              staticClass: "form-control",
+              staticStyle: { "margin-bottom": "10px" },
+              attrs: { type: "text", placeholder: "Folder's name" },
+              domProps: { value: _vm.edited_folder_name },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !("button" in $event) &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.updateFolder($event)
+                },
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.edited_folder_name = $event.target.value
+                }
+              }
+            })
+          : _vm._e(),
+        _vm._v(" "),
+        _c("div", { staticStyle: { width: "100%", "text-align": "right" } }, [
+          _vm.editing_folders
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-outline-primary ph-3",
+                  attrs: { type: "button" },
+                  on: { click: _vm.updateFolder }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-save" }),
+                  _vm._v(" Update\n            ")
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.editing_folders
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-sm btn-outline-secondary ph-3",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.editing_folders = false
+                    }
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-times" }),
+                  _vm._v(" Cancel\n            ")
+                ]
+              )
+            : _vm._e()
+        ])
+      ])
     ]
   )
 }
@@ -17904,21 +18413,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "p-2" }, [_c("h4", [_vm._v("Folders")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mt-auto p-2" }, [
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-sm btn-outline-secondary ph-3",
-          attrs: { type: "button" }
-        },
-        [_c("i", { staticClass: "fa fa-plus" }), _vm._v(" Folder ")]
-      )
-    ])
   }
 ]
 render._withStripped = true
@@ -18016,7 +18510,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n#notes-list[data-v-7413bcf6] {\n  width: 25%;\n}\n.note-preview[data-v-7413bcf6] {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  border-bottom: 1px solid #e2e6e9;\n}\n", ""]);
+exports.push([module.i, "\n#notes-list[data-v-7413bcf6] {\n  width: 25%;\n}\na[data-v-7413bcf6] {\n  color: #444;\n  text-decoration: none;\n  /* no underline */\n}\n.router-link-exact-active[data-v-7413bcf6], .router-link-active[data-v-7413bcf6] {\n  background: #788088 !important;\n  color: #fff;\n  font-weight: bold;\n}\n.note-preview[data-v-7413bcf6] {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  border-bottom: 1px solid #e2e6e9;\n}\n.note-title[data-v-7413bcf6] {\n  font-size: 1.1em;\n  font-weight: bold;\n}\n.note-subtitle[data-v-7413bcf6] {\n  font-size: 0.9em;\n  font-weight: lighter;\n}\n.note-folder[data-v-7413bcf6] {\n  font-size: 0.9em;\n  font-weight: lighter;\n}\n.note-preview[data-v-7413bcf6]:hover {\n  background-color: #fdde80 !important;\n}\n", ""]);
 
 // exports
 
@@ -18027,6 +18521,18 @@ exports.push([module.i, "\n#notes-list[data-v-7413bcf6] {\n  width: 25%;\n}\n.no
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -18073,18 +18579,83 @@ var render = function() {
       _c(
         "div",
         { staticClass: "d-flex flex-column" },
-        _vm._l(_vm.notes, function(note) {
-          return _c("div", { staticClass: "p-2 note-preview" }, [
-            _c("span", { staticClass: "note-title" }, [
-              _vm._v(_vm._s(note.title))
-            ]),
-            _c("br"),
-            _vm._v(" "),
-            _c("span", { staticClass: "note-subtitle" }, [
-              _vm._v(_vm._s(note.subtitle))
-            ])
-          ])
-        })
+        [
+          _vm.notes.length > 0
+            ? [
+                _vm._l(_vm.notes, function(note) {
+                  return [
+                    _c(
+                      "router-link",
+                      {
+                        attrs: {
+                          to: {
+                            name: "note",
+                            params: { note_id: note.id },
+                            query: _vm.$route.query
+                          }
+                        }
+                      },
+                      [
+                        _c(
+                          "div",
+                          {
+                            staticClass: "p-2 note-preview",
+                            style: { background: note.color + "" }
+                          },
+                          [
+                            _c("span", {
+                              staticClass: "note-title",
+                              domProps: {
+                                innerHTML: _vm._s(
+                                  _vm.$options.filters.highlight(
+                                    note.title,
+                                    _vm.$route.query.search
+                                  )
+                                )
+                              }
+                            }),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "note-subtitle" }, [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("date_to_human_short")(
+                                    note.updated_at.date
+                                  )
+                                ) +
+                                  "    " +
+                                  _vm._s(note.subtitle)
+                              )
+                            ]),
+                            _c("br"),
+                            _vm._v(" "),
+                            note.note_folder_id
+                              ? _c("span", { staticClass: "note-folder" }, [
+                                  _c("i", { staticClass: "fa fa-folder" }),
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(note.folder.name) +
+                                      "\n                        "
+                                  )
+                                ])
+                              : _vm._e()
+                          ]
+                        )
+                      ]
+                    )
+                  ]
+                })
+              ]
+            : _c(
+                "div",
+                { staticClass: "alert alert-info", attrs: { role: "alert" } },
+                [
+                  _c("i", { staticClass: "fa fa-alert" }),
+                  _vm._v(" No notes found\n        ")
+                ]
+              )
+        ],
+        2
       )
     ]
   )
@@ -18185,7 +18756,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n#note-container[data-v-3f978018] {\n  width: 75%;\n}\n#notes-sub-menu[data-v-3f978018] {\n  width: 100%;\n  background: #e2e6e9;\n  padding: 10px;\n  border: 1px solid #e2e6e9;\n  text-align: center;\n}\n[contenteditable=\"true\"][data-v-3f978018]:active,\n[contenteditable=\"true\"][data-v-3f978018]:focus {\n  border: none;\n  outline: none;\n}\n.note-meta[data-v-3f978018] {\n  color: #949494;\n  display: block;\n  width: 100%;\n  text-align: right;\n}\n", ""]);
 
 // exports
 
@@ -18201,12 +18772,59 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "",
-  data: function data() {
-    return {};
-  }
+    name: "",
+    data: function data() {
+        return {
+            edit: false,
+            internal_note: ''
+        };
+    },
+    props: {
+        'note': {
+            type: Object,
+            required: true
+        }
+    },
+    watch: {
+        note: function note() {
+            //do something when note value changes
+
+        }
+    },
+    computed: {
+        noteOrPlaceholder: function noteOrPlaceholder() {
+            return this.note.content != null ? this.note.content : 'Empty Note';
+        }
+    }
 });
 
 /***/ }),
@@ -18217,9 +18835,84 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "" } }, [_vm._v("\n    awesome\n")])
+  return _c(
+    "div",
+    { staticClass: "p-0 border", attrs: { id: "note-container" } },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("small", { staticClass: "p-1 note-meta" }, [
+        _vm._v(
+          "\n        Created at: " +
+            _vm._s(_vm._f("date_to_human_short")(_vm.note.created_at.date)) +
+            " " +
+            _vm._s(_vm._f("hour_to_human")(_vm.note.created_at.date))
+        ),
+        _c("br"),
+        _vm._v(
+          "\n        Updated at: " +
+            _vm._s(_vm._f("date_to_human_short")(_vm.note.updated_at.date)) +
+            " " +
+            _vm._s(_vm._f("hour_to_human")(_vm.note.updated_at.date)) +
+            "\n    "
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "p-4",
+          staticStyle: { "max-height": "400px", "overflow-x": "scroll" }
+        },
+        [
+          !_vm.edit
+            ? _c("div", {
+                staticClass: "text-muted",
+                staticStyle: { "font-size": "0.9em", display: "block" },
+                domProps: { innerHTML: _vm._s(_vm.noteOrPlaceholder) },
+                on: {
+                  click: function($event) {
+                    _vm.edit = !_vm.edit
+                  }
+                }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.edit
+            ? _c("div", {
+                staticClass: "text-muted",
+                staticStyle: { "font-size": "0.9em", display: "block" },
+                attrs: { contenteditable: "true" },
+                domProps: { innerHTML: _vm._s(_vm.note.content) },
+                on: {
+                  keyup: function($event) {
+                    _vm.internal_note = $event.target.innerHTML
+                  }
+                }
+              })
+            : _vm._e()
+        ]
+      )
+    ]
+  )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { attrs: { id: "notes-sub-menu" } }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-sm btn-outline-secondary",
+          attrs: { type: "button" }
+        },
+        [_c("i", { staticClass: "fa fa-save" })]
+      )
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -18315,7 +19008,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n.modal-header[data-v-75f8d2a7] {\n  background: #e14436;\n  color: #fff;\n  border-bottom: 0px;\n}\n.modal-body[data-v-75f8d2a7] {\n  text-align: center;\n}\n.modal-body > img[data-v-75f8d2a7] {\n  max-width: 100%;\n  max-height: 350px;\n}\n.close[data-v-75f8d2a7],\n.close[data-v-75f8d2a7]:not(:disabled):not(.disabled):hover,\n.close[data-v-75f8d2a7]:not(:disabled):not(.disabled):focus {\n  color: #fff;\n}\n.loader[data-v-75f8d2a7] {\n  border-top: 12px solid #e14436;\n}\n", ""]);
 
 // exports
 
@@ -18326,17 +19019,89 @@ exports.push([module.i, "", ""]);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__app__ = __webpack_require__(5);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "",
-  data: function data() {
-    return {};
-  }
+    name: "NoteDeleteModal",
+    props: {
+        'note': {
+            type: Object,
+            required: true
+        }
+    },
+    data: function data() {
+        return {
+            saving: false
+        };
+    },
+    created: function created() {
+        var self = this;
+        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$on('noteDeleteModalShow', self.showModal);
+    },
+    mounted: function mounted() {
+        $(this.$el).on('hidden.bs.modal', function (event) {
+            __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('NoteDeleteModalClosed');
+        });
+    },
+
+    methods: {
+        deleteNote: function deleteNote() {
+            var _this = this;
+
+            var self = this;
+            if (self.saving != true) {
+                self.saving = true;
+                axios.delete('/api/notes/' + this.note.id).then(function (response) {
+                    if (response.data.status == 'deleted') {
+                        __WEBPACK_IMPORTED_MODULE_0__app__["eventBus"].$emit('noteDeleted', { note_id: _this.note.id });
+                        $(_this.$el).modal('hide');
+                        $('body').removeClass('modal-open');
+                        $('.modal-backdrop').remove();
+                    }
+                    self.saving = false;
+                }).catch(function (e) {
+                    self.saving = false;
+                    requestSystemErrorToast(e, self);
+                });
+            }
+        },
+        showModal: function showModal(event) {
+            this.note = event;
+            $(this.$el).modal('show');
+        },
+        closeModal: function closeModal() {
+            $(this.$el).modal('hide');
+        }
+    }
 });
 
 /***/ }),
@@ -18347,9 +19112,85 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "" } }, [_vm._v("\n    Note Delete Modal\n")])
+  return _c(
+    "div",
+    { staticClass: "modal", attrs: { tabindex: "-1", role: "dialog" } },
+    [
+      _c("div", { staticClass: "modal-dialog modal-dialog-centered" }, [
+        _c("div", { staticClass: "modal-content" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-body" }, [
+            _c(
+              "div",
+              { staticClass: "dimmer", class: { active: _vm.saving } },
+              [
+                _c("div", { staticClass: "loader" }),
+                _vm._v(" "),
+                _c("p", { staticClass: "dimmer-message" }, [
+                  _vm._v(
+                    "\n                        Please wait while the note is being deleted...\n                    "
+                  )
+                ])
+              ]
+            ),
+            _vm._v(
+              "\n                " + _vm._s(_vm.note.title) + "\n            "
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "modal-footer" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-danger",
+                attrs: { type: "button", disabled: _vm.saving },
+                on: { click: _vm.deleteNote }
+              },
+              [_vm._v("Delete")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-secondary",
+                attrs: { type: "button", disabled: _vm.saving },
+                on: { click: _vm.closeModal }
+              },
+              [_vm._v("Cancel")]
+            )
+          ])
+        ])
+      ])
+    ]
+  )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title" }, [
+        _c("i", { staticClass: "fa fa-trash" }),
+        _vm._v(" Delete Note")
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -18367,41 +19208,43 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "col-sm-12" },
-      [
-        _c("notes-menu"),
-        _vm._v(" "),
-        _c("div", { staticClass: "notes-main-container" }, [
-          _c(
-            "div",
-            {
-              staticClass: "d-flex bg-light border",
-              staticStyle: { height: "500px" }
-            },
-            [
-              _c("notes-folders", { attrs: { folders: _vm.notes_folders } }),
-              _vm._v(" "),
-              _c("notes-list", { attrs: { notes: _vm.notes } }),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "p-0 border", attrs: { id: "note-container" } },
-                [_c("notes-sub-menu"), _vm._v(" "), _c("note-editor")],
-                1
-              )
-            ],
-            1
-          )
-        ])
-      ],
-      1
-    )
-  ])
+  return _c(
+    "div",
+    { staticClass: "row" },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "col-sm-12" },
+        [
+          _c("notes-menu"),
+          _vm._v(" "),
+          _c("div", { staticClass: "notes-main-container" }, [
+            _c(
+              "div",
+              {
+                staticClass: "d-flex bg-light border",
+                staticStyle: { height: "500px" }
+              },
+              [
+                _c("notes-folders", { attrs: { folders: _vm.notes_folders } }),
+                _vm._v(" "),
+                _c("notes-list", { attrs: { notes: _vm.notes } }),
+                _vm._v(" "),
+                _c("note-editor", { attrs: { note: _vm.note } })
+              ],
+              1
+            )
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("note-delete-modal", { attrs: { note: _vm.note } })
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {

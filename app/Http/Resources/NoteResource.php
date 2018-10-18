@@ -14,6 +14,15 @@ class NoteResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'subtitle' => $this->subtitle,
+            'content' => $this->content,
+            'note_folder_id' => $this->note_folder_id,
+            'folder' => $this->folder,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
     }
 }

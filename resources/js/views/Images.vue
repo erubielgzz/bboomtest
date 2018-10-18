@@ -86,8 +86,6 @@ export default {
             if(vm.$route.params.image_id == response.image_id){
                 vm.$router.push({ name: 'images', query: vm.$route.query });
             }else{
-                vm.images = [];
-                vm.links = vm.meta = {};
                 getImages(vm.$route.query.page, (err, data) => {
                     vm.setImages(err, data);
                 });
@@ -105,17 +103,18 @@ export default {
         }
     },
     beforeRouteEnter (to, from, next) {
+        console.log(1);
         getImages(to.query.page, (err, data) => {
             next(vm => vm.setImages(err, data));
         });
     },
     beforeRouteUpdate (to, from, next) {
-        this.images = [];
-        this.links = this.meta = {};
-        getImages(to.query.page, (err, data) => {
-            this.setImages(err, data);
-            next();
-        });
+        if(to.query.page != from.query.page || (to.params.image_id != null && from.params.image_id == null)){
+            getImages(to.query.page, (err, data) => {
+                this.setImages(err, data);
+            });
+        }
+        next();
     },
     computed: {
         image_id(){
