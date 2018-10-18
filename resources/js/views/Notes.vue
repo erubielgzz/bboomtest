@@ -82,7 +82,9 @@ export default {
         let vm = this;
         eventBus.$on('noteUpdated', function (response) {
             let auxNote = _.find(vm.notes, function(o) { return o.id == response.id; });
-            Object.assign(auxNote, response);
+            if(auxNote){
+                Object.assign(auxNote, response);
+            }
         });
 
         eventBus.$on('noteDeleted', function (response) {

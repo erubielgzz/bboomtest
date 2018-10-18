@@ -6,11 +6,13 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 Vue.filter('date_to_human_short', function (value) {
-    return moment(value).format("D/MMM/YYYY");
+    var mtz =  moment.tz.guess();
+    return moment.utc(value).tz(mtz).format("D/MMM/YYYY");
 });
 
 Vue.filter('hour_to_human', function (value) {
-    return moment(value).format("hh:mm a");
+    var mtz =  moment.tz.guess();
+    return moment.utc(value).tz(mtz).format("hh:mm a");
 });
 
 Vue.filter('highlight', function(str, q){

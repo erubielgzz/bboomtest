@@ -52,21 +52,20 @@
             Updated at: {{ note.updated_at.date | date_to_human_short }} {{ note.updated_at.date | hour_to_human }}
         </small>
         <div class="p-4" style="max-height:400px; overflow-x:scroll;">
-            <span
+            <!-- <span
             v-if="!edit"
             @click="edit = !edit"
             class="text-muted" style="font-size: 0.9em; display: block;"
             v-html="noteOrPlaceholder"
-            ></span>
+            ></span> -->
 
             <span
-            v-if="edit"
+            id="editable-container"
             contenteditable="true"
             class="text-muted"
             style="font-size: 0.9em; display: block; min-height:300px;"
             @keyup="updateNote"
-            v-html="note.content">
-            </span>
+            ><span v-html="note.content"></span></span>
 
         </div>
 
@@ -119,7 +118,7 @@ export default {
             if(this.note.note_folder_id != this.selected_folder.id){
                 this.realNoteUpdate();
             }
-        }
+        },
     },
     computed: {
         noteOrPlaceholder() {
@@ -156,8 +155,8 @@ export default {
                     if(response.status == 200){
                         vm.updating = false;
                         vm.errors = {};
-                        this.note.created_at = response.data.note.created_at;
-                        this.note.updated_at = response.data.note.updated_at;
+                        this.note.created_at.date = response.data.note.created_at.date;
+                        this.note.updated_at.date = response.data.note.updated_at.date;
                         this.note.color = response.data.note.color;
                         this.note.note_folder_id = response.data.note.note_folder_id;
                         eventBus.$emit('noteUpdated', response.data.note);

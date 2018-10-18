@@ -63,6 +63,16 @@ export default {
                         vm.saving = false;
                         vm.errors = {};
                         vm.$router.push({ name: 'note', params: { note_id: response.data.note.id }})
+
+                        var el = document.getElementById("editable-container");
+                        var range = document.createRange();
+                        var sel = window.getSelection();
+                        range.setStart(el.childNodes[0],0);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        el.focus();
+
                     }
 
                 })
